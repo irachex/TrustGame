@@ -1,3 +1,4 @@
+$def with (msg)
 <!doctype html>
 <html>
 <head>
@@ -29,11 +30,43 @@
       </div>
     </div>
 
-    <div class="container">
-        <div class="hero-unit">
-                <h1>Trust Game</h1>
-                <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-                <p><a class="btn btn-primary btn-large">Learn more »</a></p>
+    <div id="wrapper" class="container">
+        <div class="content">
+            <form class="form-horizontal" method="post">
+                <fieldset>
+                  <legend>Please input your information</legend>
+                  <br/>
+                  <br/>
+                  <div class="control-group">
+                    <label class="control-label" for="age">Age</label>
+                    <div class="controls">
+                      <input type="text" class="input-large" id="age" name="age">
+                    </div>
+                  </div>
+                  <div class="control-group">
+                    <label class="control-label" for="select01">Gender</label>
+                    <div class="controls">
+                        <label class="radio inline">
+                          <input type="radio" id="male" value="male" name="gender"> Male
+                        </label>
+                        <label class="radio inline">
+                          <input type="radio" id="famale" value="female" name="gender"> Female
+                        </label>
+                    </div>
+                  </div>
+                  <div class="control-group">
+                    <div class="controls">
+                        $if msg:
+                            <span class="alert alert-error">
+                            $msg
+                            </span>
+                            <br/><br/>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <button class="btn">Cancel</button>
+                    </div>
+                  </div>
+                </fieldset>
+            </form>
         </div>
     </div>
 </body>

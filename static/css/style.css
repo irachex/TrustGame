@@ -57,7 +57,6 @@ body {
     font-weight: 200;
     line-height: 27px;
 }
-    .help b { font-weight: bold; }
 #returns {
     font-size: 18px;
     font-weight: 200;
@@ -67,4 +66,8 @@ body {
 }
 a {
     cursor: pointer;
+}
+legend {
+    padding-left: 160px;
+    width: 72%;
 }

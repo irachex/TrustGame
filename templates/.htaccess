@@ -1,0 +1,5 @@
+SetHandler python-program
+PythonHandler webpy.core.handlers.modpython
+SetEnv WEBPY_SETTINGS_MODULE irachex.com.settings
+PythonPath "['/home/u168168/lib/'] + ['/home/u168168/'] + sys.path"
+PythonDebug On

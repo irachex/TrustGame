@@ -1,20 +1,37 @@
+html, body {
+    background: #eee url('../img/bg.png') bottom left repeat;
+}
+
 body {
-  padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+  padding-top: 40px; /* 60px to make the container go all the way to the bottom of the topbar */
 }
 
 .navbar-inner .container {
-    padding-left: 20%;
+    padding-left: 22%;
 }
 
 #wrapper {
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    height: 300px;
+  background: white;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#wrapper.container > .content {
+  min-height: 400px;
+  background-color: white;
+  padding: 40px;
+  margin: 0 -20px;
+  -webkit-border-radius: 0 0 6px 6px;
+  -moz-border-radius: 0 0 6px 6px;
+  border-radius: 0 0 6px 6px;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
 }
 
 #face img {
-    width: 50%;
+  width: 50%;
 }
 
 #time {
@@ -22,19 +39,28 @@ body {
     float: right;
 }
 #cross {
-    margin-top: 40px;
-    font-size: 200px;   
+    margin-top: 60px;
+    font-size: 400px;   
     text-align: center; 
 }
-
-#game {
-    margin-top: 20px;
+#face {
+    display: none;
 }
-
+#game {
+    margin-top: 50px;
+}
+#money {
+    font-size: 1.4em;
+}
 .help {
-    font-size: 20px;
+    font-size: 25px;
     font-weight: 200;
     line-height: 27px;
+}
+    .help b { font-weight: bold; }
+#returns {
+    font-size: 18px;
+    font-weight: 200;
 }
 .clear {
     clear:both;

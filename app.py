@@ -4,19 +4,19 @@
 import os
 import time
 import uuid
+import random
 import web
 
-import game
-
 urls = (
-    r"/game/(.*)", "GameHandler",
-    r"/over", "OverHandler",
-    r"/invest/(\d*)", "InvestHandler",
+    r"/game", "GameHandler",
+    r"/test", "TestHandler",
+    r"/invest", "InvestHandler",
     r"/", "HomeHandler",
 )
 
 def getPath():
     return os.path.dirname(__file__)
+
 
 class BaseHandler(object):
     def __init__(self):
@@ -45,54 +45,34 @@ class HomeHandler(BaseHandler):
     def GET(self):
         return render.index()
 
-
-class GameHandler(BaseHandler):
-    def start_game(self):
-        cid = self.get_client_id()
-        print cid
-        return game.start_game(cid)
-
-    def get_current_game(self):
-        cid = self.get_client_id()
-        current_game = game.get_current_game(cid)
-        return current_game
-    
-    def get_current_no(self):
-        cid = self.get_client_id()
-        current_no = game.get_current_no(cid)
-        return current_no
-    
-    def GET(self, opration):
-        if not opration:
-            opration = "new"
-        if opration == "test":
-            return render.game(no="Test", money=game.INIT_MONEY, img=None)
-        if opration == "restart":
-            self.clear_cookie()
-        if self.start_game():
-            no = self.get_current_no()
-            return render.game(no=no, money=game.INIT_MONEY, img="1.png")
-        else:
-            web.seeother("/over")
-
-
-class InvestHandler(GameHandler):
-    
-    def GET(self, money):
-        referer = web.ctx.env.get('HTTP_REFERER')
-        if not (referer and referer.endswith("test")):
-            pass
-        money = int(money)
-        if money > game.INIT_MONEY:
-            return '{"ok":"false", "msg":"You don\'t have that much!"}'
-        current_game = self.get_current_game()
-        returns = current_game.invest(money)
-        return '{"ok":"true", "msg":"' + str(returns) + '"}'
-
-
-class OverHandler(GameHandler):
+class InfoHandler(BaserHandler):
     def GET(self):
-        return render.over()
+        return render.info()
+    
+    def POST(self):
+        pass
+    
+class GameHandler(BaseHandler):
+    def GET(self):
+        prob_list = [20] * 3 + [80] * 3
+        random.shuffle(prob_list)
+        print prob_list
+        return render.game(str(prob_list))
+
+class TestHandler(GameHandler):
+    def GET(self):
+        prob_list = random.sample([0.2, 0.8], 1)
+        return render.game(str(prob_list))
+    
+class InvestHandler(GameHandler):
+    def GET(self):
+        referer = web.ctx.env.get('HTTP_REFERER')
+        if referer and referer.endswith("test"):
+            return
+        money = int(web.input().get("money"))
+        round_no = int(web.input().get("round_no"))
+        trial_no = money = int(web.input().get("trial_no"))
+        print money, round_no, trial_no
 
 
 rootdir = getPath()

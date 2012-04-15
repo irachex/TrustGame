@@ -16,7 +16,7 @@ urls = (
     r"/test", "TestHandler",
     r"/invest", "InvestHandler",
     r"/survey", "SurveyHandler",
-    r"/report", "ReportHandler",
+    r"/report/(.*)", "ReportHandler",
     r"/", "HomeHandler",
 )
 
@@ -115,11 +115,11 @@ class SurveyHandler(BaseHandler):
         return "ok"
 
 
-class ReportHandler(BaseHandler):
+class ReportHandler(object):
     def GET(self, action):
-        user = db.query("user", order="uid")
-        trial = db.query("trial", order="uid, trial_no")
-        game = db.query("game", order="uid, trial_no, round_no")
+        user = db.select("user", order="uid")
+        trial = db.select("trial", order="uid, trial_no")
+        game = db.select("game", order="uid, trial_no, round_no")
         if action=="download":
             # TODO: add csv export
             return
@@ -134,7 +134,9 @@ db = web.database(dbn=config.db["engine"], db=config.db["name"])
 
 app = web.application(urls, globals())
 
-if config.debug:
-    app.run()
-else:
+if not config.debug:
     application = app.wsgifunc()
+
+
+if __name__ == "__main__":
+    app.run()

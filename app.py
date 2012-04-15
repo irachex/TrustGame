@@ -74,8 +74,11 @@ class InfoHandler(BaseHandler):
 
 class GameHandler(BaseHandler):
     def GET(self):
-        game_list = [(80, 1), (20, 2), (80, 3), (80, 4), (80, 0), (20, 0)]
-        random.shuffle(game_list)
+        face_list = [(80, 1), (20, 2), (80, 3), (80, 4)]
+        noface_list = [(80, 0), (20, 0)]
+        random.shuffle(face_list)
+        random.shuffle(noface_list)        
+        game_list = noface_list + face_list
         prob_list = [p for (p, i) in game_list]
         img_list = [i for (p, i) in game_list]
         uid = self.get_uid()

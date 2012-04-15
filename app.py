@@ -7,6 +7,8 @@ import uuid
 import random
 import web
 
+import config
+
 urls = (
     r"/info", "InfoHandler",
     r"/about", "AboutHandler",
@@ -14,6 +16,7 @@ urls = (
     r"/test", "TestHandler",
     r"/invest", "InvestHandler",
     r"/survey", "SurveyHandler",
+    r"/report", "ReportHandler",
     r"/", "HomeHandler",
 )
 
@@ -125,13 +128,13 @@ class ReportHandler(BaseHandler):
 
 rootdir = getPath()
 render = web.template.render(rootdir + "/templates")
-db = web.database(dbn='sqlite', db='trust.db')
+db = web.database(dbn=config.db["engine"], db=config.db["name"])
 
 #web.webapi.internalerror = web.debugerror 
 
 app = web.application(urls, globals())
-#main = app.wsgifunc()
 
-
-if __name__ == "__main__":
+if config.debug:
     app.run()
+else:
+    application = app.wsgifunc()

@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+db = {
+    "engine": "sqlite",
+    "name": "trust.db",
+}
+
+debug = True

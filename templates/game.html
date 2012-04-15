@@ -33,7 +33,7 @@ $def with (prob_list, img_list)
 
     <div id="wrapper" class="container">
         <div class="content">
-            <h3>Trial <span id="trial_no">1</span> Round <span id="round_no">1</span></h3>
+            <h3>Trial <span class="trial_no">1</span> Round <span class="round_no">1</span></h3>
             <div id="cross">+</div>
             <div id="face"></div>
             <div id="game">
@@ -59,12 +59,22 @@ $def with (prob_list, img_list)
                 <span id="returns" class="alert"></span>
             </div>
             
+            <div id="rest">
+                <h1>Thank you.</h1>
+                <div style="font-size:20px; font-weight:200;line-height: 40px;margin-top: 20px;margin-bottom: 40px;">
+                    Trial <span class="trial_no"></span> is over. Please have a rest and move to next trial : )
+                </div>
+                <div>
+                    <a href="javascript:void(0);" class="btn btn-primary btn-large" id="next_trial">Next Trial</a>
+                </div>
+            </div>
+
             <div id="survey">
-                <form class="form-horizontal">
+                <form class="form-horizontal" method="post">
                     <fieldset>
-                      <legend>Please complete the survey</legend>
-                      <div class="control-group">
-                        <label for="user_prob">在本实验中您认为玩家B返还投资回报的概率为</label>
+                      <legend></legend>
+                      <div class="control-group span">
+                        <label for="user_prob">1.在本实验中您认为玩家B返还投资回报的概率为</label>
                         <div class="btn-group" data-toggle="buttons-radio" name="user_prob">
                           <a href="javascript:void(0);" class="btn btn-success">0%</a>
                           <a href="javascript:void(0);" class="btn btn-success">10%</a>
@@ -77,12 +87,13 @@ $def with (prob_list, img_list)
                           <a href="javascript:void(0);" class="btn btn-success">80%</a>
                           <a href="javascript:void(0);" class="btn btn-success">90%</a>
                           <a href="javascript:void(0);" class="btn btn-success">100%</a>
-                          <input type="hidden" name="user_prob" />
                         </div>
+                        <input type="hidden" name="user_prob" id="user_prob"/>
                       </div>
                       
-                      <div class="control-group">
-                          <table>
+                      <div class="control-group span7">
+                         2. 请您对该玩家进行评价
+                          <table class="table">
                             <thead>
                               <tr/>
                                 <th> </th>
@@ -104,38 +115,49 @@ $def with (prob_list, img_list)
                               </tr>
                               <tr>
                                   <td>吸引力</td>
-                                  <td><input type="radio" value="1" name="c1"/></td>
-                                  <td><input type="radio" value="2" name="c1"/></td>
-                                  <td><input type="radio" value="3" name="c1"/></td>
-                                  <td><input type="radio" value="4" name="c1"/></td>
-                                  <td><input type="radio" value="5" name="c1"/></td>
+                                  <td><input type="radio" value="1" name="c2"/></td>
+                                  <td><input type="radio" value="2" name="c2"/></td>
+                                  <td><input type="radio" value="3" name="c2"/></td>
+                                  <td><input type="radio" value="4" name="c2"/></td>
+                                  <td><input type="radio" value="5" name="c2"/></td>
                               </tr>
                               <tr>
                                   <td>竞争力</td>
-                                  <td><input type="radio" value="1" name="c1"/></td>
-                                  <td><input type="radio" value="2" name="c1"/></td>
-                                  <td><input type="radio" value="3" name="c1"/></td>
-                                  <td><input type="radio" value="4" name="c1"/></td>
-                                  <td><input type="radio" value="5" name="c1"/></td>
+                                  <td><input type="radio" value="1" name="c3"/></td>
+                                  <td><input type="radio" value="2" name="c3"/></td>
+                                  <td><input type="radio" value="3" name="c3"/></td>
+                                  <td><input type="radio" value="4" name="c3"/></td>
+                                  <td><input type="radio" value="5" name="c3"/></td>
                               </tr>
                               <tr>
                                   <td>攻击性</td>
-                                  <td><input type="radio" value="1" name="c1"/></td>
-                                  <td><input type="radio" value="2" name="c1"/></td>
-                                  <td><input type="radio" value="3" name="c1"/></td>
-                                  <td><input type="radio" value="4" name="c1"/></td>
-                                  <td><input type="radio" value="5" name="c1"/></td>
+                                  <td><input type="radio" value="1" name="c4"/></td>
+                                  <td><input type="radio" value="2" name="c4"/></td>
+                                  <td><input type="radio" value="3" name="c4"/></td>
+                                  <td><input type="radio" value="4" name="c4"/></td>
+                                  <td><input type="radio" value="5" name="c4"/></td>
                               </tr>
                               <tr>
                                   <td>令人喜爱程度</td>
-                                  <td><input type="radio" value="1" name="c1"/></td>
-                                  <td><input type="radio" value="2" name="c1"/></td>
-                                  <td><input type="radio" value="3" name="c1"/></td>
-                                  <td><input type="radio" value="4" name="c1"/></td>
-                                  <td><input type="radio" value="5" name="c1"/></td>
+                                  <td><input type="radio" value="1" name="c5"/></td>
+                                  <td><input type="radio" value="2" name="c5"/></td>
+                                  <td><input type="radio" value="3" name="c5"/></td>
+                                  <td><input type="radio" value="4" name="c5"/></td>
+                                  <td><input type="radio" value="5" name="c5"/></td>
                               </tr>
                             </tbody>
                           </table>
+                      </div>
+                      <div class="clear"></div>
+                      <div id="survey_action" style="text-align:center;">
+                          <div id="survey_error"  style="display:none;">
+                          <span class="alert alert-error">
+                          Please complete the survey.
+                          </span>
+                          <br/><br/>
+                          </div>
+                        <input type="hidden" name="trial_no" value="" class="trial_no"/>
+                        <input type="submit" id="survey_btn" class="btn btn-large btn-primary" value="Submit Survey"/>
                       </div>
                    </fieldset>
                  </form>                

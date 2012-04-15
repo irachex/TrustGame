@@ -34,6 +34,8 @@ Game = {
             $("#face").html("<img src='/static/face/" + Game.image + ".png' />");
         }
         Game.enable();
+        $("#survey").hide();
+        $("#rest").hide();
         $("#game").hide();
         $("#returns").hide();
         $("#cross").show();
@@ -65,7 +67,7 @@ Game = {
         else {
             $("#returns").removeClass("alert-success").addClass("alert-error");
         }
-        $("#returns").html(message).show();
+        $("#returns").html(message).fadeIn(300);
     },
     invest: function(money) {
         var returns = money * (Math.random()*100 < Game.probability ? 2: 0);
@@ -98,7 +100,14 @@ App = {
     round: 0,
     prob_list: new Array(),
     img_list: new Array(),
+    test: false,
     init: function() {
+        if (window.location.href.indexOf("test") !== -1) {
+            App.test = true;
+        }
+        else {
+            App.test = false;
+        }
         App.prob_list = eval("(" + $("#prob_list").html() + ")");
         App.img_list = eval("(" + $("#img_list").html() + ")");
         App.TOTAL_TRIAL = App.prob_list.length;
@@ -106,6 +115,9 @@ App = {
             Game.disable();
             Game.invest($(this).html());
             return false;
+        });
+        $("#next_trial").click(function() {
+            App.newTrial();
         });
     },
     newRound: function() {
@@ -115,25 +127,32 @@ App = {
             return;
         }
         App.round += 1;
-        $("#round_no").html(App.round);
+        $(".round_no").html(App.round);
         Game.init(App.prob_list[App.trial-1], App.img_list[App.trial-1]);
     },
     trialOver: function() {
-        $("#survey").show();
-        if (window.location.href.indexOf("test") !== -1) {
+        if (!App.test) {
             // not test, show survey
+            $(".round_no").html(" Over. Please fill the survey");
+            Survey.init();
         }
         else {
             // test
+            $(".round_no").html(" Over.");
+            $("#next_trial").html("Start formal trial").attr("href", "/game");
+            $("#game").hide();
+            $("#rest").show();
         }
-        
     },
     newTrial: function() {
         if (App.trial >= App.TOTAL_TRIAL) {
             return;
         }
         App.trial += 1;
-        $("trail_no").html(App.trial);
+        $(".trial_no").html(App.trial).val(App.trial);
+        if (App.test) {
+            $(".trial_no").html("Test");
+        }
         App.round = 0;
         App.newRound();
     }
@@ -141,19 +160,49 @@ App = {
 
 Survey = {
     init: function() {
-        $('form .btn-group .btn').click(function() {
-            
+        $('#survey form .btn-group .btn').click(function() {
+            var percent = $(this).html();
+            var value = percent.substr(0, percent.length-1);
+            $("#user_prob").val(value);
         });
+        $("#survey form").submit(function() {
+            if (Survey.validate()) {
+                $("#survey_error").addClass("disabled").attr("disabled", "")
+                Survey.submit();
+            }
+            else {
+                $("#survey_error").fadeIn();
+            }
+            return false;
+        });
+        $("#survey_error").hide().removeClass("disabled").removeAttr("disabled")
+        ;
         $("#cross").hide();
         $("#game").hide();
-        $("#survey").show();        
+        $("#survey").show();
+    },
+    validate: function() {
+        var flag = true;
+        $.each($("input", "form"), function() {
+            if ($(this).val() == "") flag=false;
+        });
+        return flag;
     },
     submit: function() {
+        $.ajax({
+            url: '/survey',
+            type: 'POST',
+            data: $("#survey form").serialize(),
+            success: function() {
+                $("#survey").hide();
+                $(".round_no").html(" Over.");
+                $("#rest").show();
+            }
+        });
     }
 }
 
 $(document).ready(function() {
-    //App.init();
-    //App.newTrial();
-    Survey.init();
+    App.init();
+    App.newTrial();
 });

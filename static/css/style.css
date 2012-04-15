@@ -65,6 +65,10 @@ body {
 #survey {
     display: none;
 }
+#rest {
+  display: none;
+  margin-top: 40px;
+}
 .clear {
     clear:both;
 }

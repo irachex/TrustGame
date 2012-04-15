@@ -13,6 +13,7 @@ urls = (
     r"/game", "GameHandler",
     r"/test", "TestHandler",
     r"/invest", "InvestHandler",
+    r"/survey", "SurveyHandler",
     r"/", "HomeHandler",
 )
 
@@ -99,15 +100,28 @@ class InvestHandler(GameHandler):
 class SurveyHandler(BaseHandler):
     def POST(self):
         uid = self.get_uid()
-        trial_no = web.input().get("trial_no")
-        user_prob = web.input().get("prob")
-        c1 = web.input().get("c1", None)
-        c2 = web.input().get("c2", None)
-        c3 = web.input().get("c3", None)
-        c4 = web.input().get("c1", None)
-        c5 = web.input().get("c1", None)
-        db.update('trial', where='uid=$uid and trial_no=$trial_no', uid=uid, trial_no=trial_no,
+        trial_no = int(web.input().get("trial_no", None))
+        user_prob = int(web.input().get("user_prob", None))
+        c1 = int(web.input().get("c1", None))
+        c2 = int(web.input().get("c2", None))
+        c3 = int(web.input().get("c3", None))
+        c4 = int(web.input().get("c1", None))
+        c5 = int(web.input().get("c1", None))
+        db.update('trial', where='uid=%d and trial_no=%d' % (uid, trial_no),
             user_prob=user_prob, c1=c1, c2=c2, c3=c3, c4=c4, c5=c5)
+        return "ok"
+
+
+class ReportHandler(BaseHandler):
+    def GET(self, action):
+        user = db.query("user", order="uid")
+        trial = db.query("trial", order="uid, trial_no")
+        game = db.query("game", order="uid, trial_no, round_no")
+        if action=="download":
+            
+            return
+        return render.report(user=user, trial=trial, game=game)
+
 
 rootdir = getPath()
 render = web.template.render(rootdir + "/templates")

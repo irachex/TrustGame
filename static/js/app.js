@@ -1,8 +1,8 @@
 var second_timer;
 var t;
 Timer = {
-    INIT_SECONDS: 15,
-    seconds: 15,
+    INIT_SECONDS: 8,
+    seconds: 8,
     init: function() {
         Timer.seconds = Timer.INIT_SECONDS;
         $("#timer").html(Timer.seconds);
@@ -26,18 +26,37 @@ Timer = {
 
 Game = {
     probability: 0.8,
-    init: function(probability) {
+    image: 0,
+    init: function(probability, image) {
         Game.probability = probability;
+        Game.image = image;
+        if (Game.image > 0) {
+            $("#face").html("<img src='/static/face/" + Game.image + ".png' />");
+        }
         Game.enable();
         $("#game").hide();
+        $("#returns").hide();
         $("#cross").show();
         t = window.setTimeout(function() {
             window.clearInterval(t);
-            $("#game").show();
-            $("#cross").hide();
-            Timer.init();
+            if (Game.image == 0) {
+                Game.start();
+            }
+            else {
+                $("#face").show();
+                $("#cross").hide();
+                t = window.setTimeout(function() {
+                    window.clearInterval(t);
+                    Game.start();
+                }, 3500);
+            }
         }, 1000);
-        $("#returns").hide();
+    },
+    start: function() {
+        $("#game").show();
+        $("#face").hide();
+        $("#cross").hide();
+        Timer.init();  
     },
     hint: function(status, message) {
         if (status == "success") {
@@ -61,7 +80,7 @@ Game = {
     },
     enable: function() {
         $("#money .btn").removeClass("disabled").removeAttr("disabled");
-    }
+    },
     disable: function() {
         $("#money .btn").addClass("disabled").attr("disabled", "disabled");
     },
@@ -78,8 +97,10 @@ App = {
     TOTAL_ROUND: 15,
     round: 0,
     prob_list: new Array(),
+    img_list: new Array(),
     init: function() {
-        App.prob_list = eval("(" + $("#data").html() + ")");
+        App.prob_list = eval("(" + $("#prob_list").html() + ")");
+        App.img_list = eval("(" + $("#img_list").html() + ")");
         App.TOTAL_TRIAL = App.prob_list.length;
         $("#money .btn").click(function() {
             Game.disable();
@@ -95,9 +116,16 @@ App = {
         }
         App.round += 1;
         $("#round_no").html(App.round);
-        Game.init(0.8);
+        Game.init(App.prob_list[App.trial-1], App.img_list[App.trial-1]);
     },
     trialOver: function() {
+        $("#survey").show();
+        if (window.location.href.indexOf("test") !== -1) {
+            // not test, show survey
+        }
+        else {
+            // test
+        }
         
     },
     newTrial: function() {
@@ -111,7 +139,21 @@ App = {
     }
 }
 
+Survey = {
+    init: function() {
+        $('form .btn-group .btn').click(function() {
+            
+        });
+        $("#cross").hide();
+        $("#game").hide();
+        $("#survey").show();        
+    },
+    submit: function() {
+    }
+}
+
 $(document).ready(function() {
-    App.init();
-    App.newTrial();
+    //App.init();
+    //App.newTrial();
+    Survey.init();
 });

@@ -9,6 +9,7 @@ import web
 
 urls = (
     r"/info", "InfoHandler",
+    r"/about", "AboutHandler",
     r"/game", "GameHandler",
     r"/test", "TestHandler",
     r"/invest", "InvestHandler",
@@ -48,6 +49,10 @@ class HomeHandler(BaseHandler):
     def GET(self):
         return render.index()
 
+class AboutHandler(BaseHandler):
+    def GET(self):
+        return render.about()
+
 class InfoHandler(BaseHandler):
     def GET(self):
         return render.info(msg=None)
@@ -59,21 +64,24 @@ class InfoHandler(BaseHandler):
             return render.info(msg="Please complete the form.")
         uid = db.insert('user', gender=gender, age=age)
         self.set_cookie("uid", uid)
-        return "<html><script type='text/javascript'>window.href.location='/game';</script></html>"
+        return "<html><script type='text/javascript'>window.location.href='/game';</script></html>"
 
 class GameHandler(BaseHandler):
     def GET(self):
         prob_list = [20] * 3 + [80] * 3
-        uid = self.get_uid()
+        img_list = [1, 2, 3, 4]
         random.shuffle(prob_list)
-        for trial_no in range(1, len(prob_list)+1):
-            db.insert('trial', uid=uid, trial_no=trial_no, probability=prob_list[i])
-        return render.game(str(prob_list))
+        random.shuffle(img_list)
+        img_list += [0, 0]
+        uid = self.get_uid()
+        for i in range(len(prob_list)):
+            db.insert('trial', uid=uid, trial_no=i+1, probability=prob_list[i], image=img_list[i])
+        return render.game(str(prob_list), str(img_list))
 
 class TestHandler(GameHandler):
     def GET(self):
         prob_list = random.sample([0.2, 0.8], 1)
-        return render.game(str(prob_list))
+        return render.game(str(prob_list), str([0]))
     
 class InvestHandler(GameHandler):
     def GET(self):
@@ -85,9 +93,7 @@ class InvestHandler(GameHandler):
         returns = int(web.input().get("returns"))
         trial_no = int(web.input().get("trial_no"))
         round_no = int(web.input().get("round_no"))
-        image = web.input().get("image")
-        db.insert("game", uid=uid, trial_no=trial_no, round_no=round_no, money=money,
-            returns=returns, image=image)
+        db.insert("game", uid=uid, trial_no=trial_no, round_no=round_no, money=money, returns=returns)
         return "ok"
 
 class SurveyHandler(BaseHandler):
@@ -105,7 +111,7 @@ class SurveyHandler(BaseHandler):
 
 rootdir = getPath()
 render = web.template.render(rootdir + "/templates")
-db = web.database(dbn='sqlite', db='trust')
+db = web.database(dbn='sqlite', db='trust.db')
 
 #web.webapi.internalerror = web.debugerror 
 

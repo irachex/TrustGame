@@ -12,9 +12,9 @@ body {
 
 #wrapper {
   background: white;
-  width: 50%;
   margin-left: auto;
   margin-right: auto;
+  width: 680px;
 }
 
 #wrapper.container > .content {
@@ -45,6 +45,7 @@ body {
 }
 #face {
     display: none;
+    text-align: center;
 }
 #game {
     margin-top: 50px;
@@ -61,13 +62,22 @@ body {
     font-size: 18px;
     font-weight: 200;
 }
+#survey {
+    display: none;
+}
 .clear {
     clear:both;
 }
 a {
     cursor: pointer;
 }
+/*    info    */
 legend {
     padding-left: 160px;
-    width: 72%;
+    width: 480px;
+}
+
+/* about */
+ol li {
+    margin-top:15px;
 }

@@ -13,7 +13,6 @@ CREATE TABLE game (
     round_no int,
     invest int,
     returns int,
-    image int,
     created date default (datetime('now', 'localtime'))
 );
 
@@ -22,6 +21,7 @@ CREATE TABLE trial (
     uid int,
     trial_no int,
     probability int,
+    image int,
     user_prob int,
     c1 int,
     c2 int,

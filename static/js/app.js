@@ -139,9 +139,11 @@ App = {
         else {
             // test
             $(".round_no").html(" Over.");
+            $("#rest_info").html("Trial Test is over. Please have a rest and move to formal trial : )");
             $("#next_trial").html("Start formal trial").attr("href", "/game");
             $("#game").hide();
             $("#rest").show();
+            window.onbeforeunload = null;
         }
     },
     newTrial: function() {
@@ -155,6 +157,11 @@ App = {
         }
         App.round = 0;
         App.newRound();
+    },
+    over: function() {
+        window.onbeforeunload = null;
+        $("#rest_info").html("实验结束，感谢您的参与！");
+        $("#next_trial").html("");
     }
 }
 
@@ -175,8 +182,15 @@ Survey = {
             }
             return false;
         });
-        $("#survey_error").hide().removeClass("disabled").removeAttr("disabled")
-        ;
+        if (App.img_list[App.trial] == 0) {
+            $("#photo_survey").hide();
+        }
+        else {
+            $("#photo_survey").show();
+        }
+        $("#survey_error").hide().removeClass("disabled").removeAttr("disabled");
+        $("#survey form input").val("");
+        $("#survey form .btn-group .btn").removeClass("active");
         $("#cross").hide();
         $("#game").hide();
         $("#survey").show();
@@ -197,6 +211,9 @@ Survey = {
                 $("#survey").hide();
                 $(".round_no").html(" Over.");
                 $("#rest").show();
+                if (App.trial == App.TOTAL_TRIAL) {
+                    App.over();
+                }
             }
         });
     }
@@ -206,3 +223,7 @@ $(document).ready(function() {
     App.init();
     App.newTrial();
 });
+
+window.onbeforeunload = function() {
+    return "实验还未完成，离开页面将丢失本次试验数据，是否继续？";
+}

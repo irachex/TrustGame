@@ -1,4 +1,4 @@
-#!/usr/bin/env python26
+#!/usr/bin/env python
 # coding: utf-8
 
 import os
@@ -23,7 +23,8 @@ def getPath():
 
 class BaseHandler(object):
     def __init__(self):
-        pass
+        if not self.get_uid():
+            web.seeother("/info")
          
     def set_cookie(self, key, value):
         web.setcookie(key, value, 360000)
@@ -48,7 +49,8 @@ class BaseHandler(object):
     
 class HomeHandler(BaseHandler):
     def GET(self):
-        return render.index()
+        #return render.index()
+        web.seeother("/about")
 
 class AboutHandler(BaseHandler):
     def GET(self):
@@ -65,15 +67,14 @@ class InfoHandler(BaseHandler):
             return render.info(msg="Please complete the form.")
         uid = db.insert('user', gender=gender, age=age)
         self.set_cookie("uid", uid)
-        return "<html><script type='text/javascript'>window.location.href='/game';</script></html>"
+        return "<html><script type='text/javascript'>window.location.href='/about';</script></html>"
 
 class GameHandler(BaseHandler):
     def GET(self):
-        prob_list = [20] * 3 + [80] * 3
-        img_list = [1, 2, 3, 4]
-        random.shuffle(prob_list)
-        random.shuffle(img_list)
-        img_list += [0, 0]
+        game_list = [(80, 1), (20, 2), (80, 3), (80, 4), (80, 0), (20, 0)]
+        random.shuffle(game_list)
+        prob_list = [p for (p, i) in game_list]
+        img_list = [i for (p, i) in game_list]
         uid = self.get_uid()
         for i in range(len(prob_list)):
             db.insert('trial', uid=uid, trial_no=i+1, probability=prob_list[i], image=img_list[i])
@@ -81,8 +82,7 @@ class GameHandler(BaseHandler):
 
 class TestHandler(GameHandler):
     def GET(self):
-        prob_list = random.sample([0.2, 0.8], 1)
-        return render.game(str(prob_list), str([0]))
+        return render.game(str([50,]), str([0,]))
     
 class InvestHandler(GameHandler):
     def GET(self):

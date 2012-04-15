@@ -184,6 +184,7 @@ Survey = {
         });
         if (App.img_list[App.trial] == 0) {
             $("#photo_survey").hide();
+            $("#photo_survey input").val("-1");
         }
         else {
             $("#photo_survey").show();

@@ -53,7 +53,7 @@ class BaseHandler(object):
 class HomeHandler(BaseHandler):
     def GET(self):
         #return render.index()
-        web.seeother("/about")
+        web.seeother("/info")
 
 class AboutHandler(BaseHandler):
     def GET(self):
@@ -121,7 +121,7 @@ class ReportHandler(BaseHandler):
         trial = db.query("trial", order="uid, trial_no")
         game = db.query("game", order="uid, trial_no, round_no")
         if action=="download":
-            
+            # TODO: add csv export
             return
         return render.report(user=user, trial=trial, game=game)
 

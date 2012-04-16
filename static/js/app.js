@@ -1,5 +1,60 @@
 var second_timer;
 var t;
+
+function array2json(arr) {
+   var s="";
+   if( arr instanceof Array || arr instanceof Object){
+      var isObj=0;
+      //check value type
+      for(key in arr){
+         if( isNaN(parseInt(key)) ){ //key is string
+            isObj=1;
+         }
+         else{
+            //key is index , check sort
+            var na=arr.length;
+            var tmp=arr;
+            //hack for ie
+            arr=Array();
+            for(var j=0;j<na;j++){
+               if( typeof(tmp[j])=="undefined" ){
+                  arr[j]="";
+               }
+               else{
+                  arr[j]=tmp[j];
+               }
+            }
+         }
+         break;
+      }
+      
+      for(key in arr){
+         var value=arr[key];
+         if( isObj ){
+            if(s){s+=',';}
+            s+='"'+key+'":'+array2json(value);
+         }
+         else{
+            if(s){s+=',';}
+            s+=array2json(value);
+         }
+      }
+      if(isObj)
+         s='{'+s+'}';
+      else
+         s='['+s+']'
+   }
+   else{
+      if(!isNaN(parseInt(arr))){
+         s+=arr;
+      }
+      else{
+         s='"'+arr+'"';
+      }
+   }
+   return s;
+}
+
 Timer = {
     INIT_SECONDS: 8,
     seconds: 8,
@@ -12,6 +67,8 @@ Timer = {
         second_timer = window.setInterval("Timer.display();", 1000);
     },
     display: function() {
+        Timer.seconds -= 1; 
+        $("#timer").html(Timer.seconds);
         if (Timer.seconds == 0) {
             window.clearInterval(second_timer);
             Game.hint("error", "Time up!");
@@ -20,8 +77,6 @@ Timer = {
             //App.newRound();
             return;
         }
-        Timer.seconds -= 1; 
-        $("#timer").html(Timer.seconds);
     }
 };
 
@@ -94,6 +149,7 @@ Game = {
         $("#money .btn").addClass("disabled").attr("disabled", "disabled");
     },
     next: function() {
+        Game.disable();
         window.setTimeout(function() {
             App.newRound();
         }, 3500);
@@ -120,7 +176,6 @@ App = {
         App.img_list = eval("(" + $("#img_list").html() + ")");
         App.TOTAL_TRIAL = App.prob_list.length;
         $("#money .btn").click(function() {
-            Game.disable();
             Game.invest($(this).html());
             return false;
         });
@@ -175,7 +230,7 @@ App = {
             type: "post",
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            data: {"data": App.data},
+            data: array2json(App.data),
             success: function() {
                 window.onbeforeunload = null;
                 $("#rest_info").html("实验结束，感谢您的参与！");

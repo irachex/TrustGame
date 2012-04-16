@@ -5,6 +5,7 @@ import os
 import time
 import uuid
 import random
+import json
 import web
 
 import config
@@ -111,21 +112,27 @@ class InvestHandler(NeedInfoHandler):
         referer = web.ctx.env.get('HTTP_REFERER')
         if referer and referer.endswith("test"):
             return
-        data = web.input()
+        data = web.data()
         print data
+        jsondata = json.loads(data)
+        print jsondata
         uid = self.get_uid()
-        """
-        money = int(web.input().get("money"))
-        returns = int(web.input().get("returns"))
-        trial_no = int(web.input().get("trial_no"))
-        round_no = int(web.input().get("round_no"))
-        id = str(uid) + "-" + str(trial_no) + "-" + str(round_no)
-        if not db.query("select count(*) as cnt from game where id='%s'" % id)[0].cnt:
-            db.insert("game", id=id, uid=uid, trial_no=trial_no, round_no=round_no, money=money, returns=returns)
-        else:
-            db.update("game", where="id='%s'" % id, id=id, uid=uid, trial_no=trial_no, round_no=round_no, money=money, returns=returns)
-            """
-        return "ok"
+        for trial_no in range(1, len(jsondata) + 1):
+            for round_no in range(1, len(jsondata[trial_no]) + 1):
+                if jsondata[trial_no][round_no] == -1:
+                    money = -1
+                    returns = -1
+                    time = -1
+                else:
+                    invest = jsondata[trial_no][round_no]["invest"]
+                    returns = jsondata[trial_no][round_no]["returns"]
+                    time = jsondata[trial_no][round_no]["time"]
+                id = str(uid) + "-" + str(trial_no) + "-" + str(round_no)
+                if not db.query("select count(*) as cnt from game where id='%s'" % id)[0].cnt:
+                    db.insert("game", id=id, uid=uid, trial_no=trial_no, round_no=round_no, invest=invest, returns=returns, time=time)
+                else:
+                    db.update("game", where="id='%s'" % id, id=id, uid=uid, trial_no=trial_no, round_no=round_no, invest=invest, returns=returns, time=time)
+        return '{"ok":"true"}'
 
 class SurveyHandler(NeedInfoHandler):
     def POST(self):

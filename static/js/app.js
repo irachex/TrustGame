@@ -257,7 +257,7 @@ Survey = {
             }
             return false;
         });
-    }
+    },
     start: function() {
         Survey.reset();
         if (App.img_list[App.trial - 1] == 0) {

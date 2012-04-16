@@ -272,7 +272,7 @@ Survey = {
         $("#survey").show();
     },
     reset: function() {
-        $("#survey_error").hide().
+        $("#survey_error").hide();
         $("#survey_btn").removeClass("disabled").removeAttr("disabled");
         $("#survey form .btn-group .btn").removeClass("active");
         $("input[name=trial_no]").val(App.trial);

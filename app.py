@@ -120,7 +120,7 @@ class InvestHandler(NeedInfoHandler):
             for round_no in range(1, len(jsondata[trial_no])):
                 print trial_no, round_no
                 if jsondata[trial_no][round_no] == -1:
-                    money = -1
+                    invest = -1
                     returns = -1
                     time = -1
                 else:

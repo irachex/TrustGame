@@ -42,6 +42,9 @@ class BaseHandler(object):
         if not uid:
             return None
         return int(uid)
+    
+    def is_finished(self):
+        pass
         
     def get_client_id(self):
         cid = self.get_cookie("cid")
@@ -85,12 +88,18 @@ class GameHandler(NeedInfoHandler):
         noface_list = [(80, 0), (20, 0)]
         random.shuffle(face_list)
         random.shuffle(noface_list)        
-        game_list = noface_list + face_list
+        #game_list = noface_list + face_list
+        game_list = [(50,0)]
         prob_list = [p for (p, i) in game_list]
         img_list = [i for (p, i) in game_list]
         uid = self.get_uid()
         for i in range(len(prob_list)):
-            db.insert('trial', uid=uid, trial_no=i+1, probability=prob_list[i], image=img_list[i])
+            trial_no = i + 1
+            id = str(uid) + "-" + str(trial_no)
+            if not db.query("select count(*) as cnt from trial where id='%s'" % id)[0].cnt:
+                db.insert('trial', id=id, uid=uid, trial_no=trial_no, probability=prob_list[i], image=img_list[i])
+            else:
+                db.update('trial', where="id='%s'" % id, uid=uid, trial_no=trial_no, probability=prob_list[i], image=img_list[i])
         return render.game(str(prob_list), str(img_list))
 
 class TestHandler(NeedInfoHandler):
@@ -98,16 +107,24 @@ class TestHandler(NeedInfoHandler):
         return render.game(str([50,]), str([0,]))
     
 class InvestHandler(NeedInfoHandler):
-    def GET(self):
+    def POST(self):
         referer = web.ctx.env.get('HTTP_REFERER')
         if referer and referer.endswith("test"):
             return
+        data = web.input()
+        print data
         uid = self.get_uid()
+        """
         money = int(web.input().get("money"))
         returns = int(web.input().get("returns"))
         trial_no = int(web.input().get("trial_no"))
         round_no = int(web.input().get("round_no"))
-        db.insert("game", uid=uid, trial_no=trial_no, round_no=round_no, money=money, returns=returns)
+        id = str(uid) + "-" + str(trial_no) + "-" + str(round_no)
+        if not db.query("select count(*) as cnt from game where id='%s'" % id)[0].cnt:
+            db.insert("game", id=id, uid=uid, trial_no=trial_no, round_no=round_no, money=money, returns=returns)
+        else:
+            db.update("game", where="id='%s'" % id, id=id, uid=uid, trial_no=trial_no, round_no=round_no, money=money, returns=returns)
+            """
         return "ok"
 
 class SurveyHandler(NeedInfoHandler):
@@ -115,15 +132,19 @@ class SurveyHandler(NeedInfoHandler):
         uid = self.get_uid()
         trial_no = int(web.input().get("trial_no", None))
         user_prob = int(web.input().get("user_prob", None))
-        c1 = int(web.input().get("c1", None))
-        c2 = int(web.input().get("c2", None))
-        c3 = int(web.input().get("c3", None))
-        c4 = int(web.input().get("c1", None))
-        c5 = int(web.input().get("c1", None))
-        db.update('trial', where='uid=%d and trial_no=%d' % (uid, trial_no),
-            user_prob=user_prob, c1=c1, c2=c2, c3=c3, c4=c4, c5=c5)
+        c1 = int(web.input().get("c1", -1))
+        c2 = int(web.input().get("c2", -1))
+        c3 = int(web.input().get("c3", -1))
+        c4 = int(web.input().get("c4", -1))
+        c5 = int(web.input().get("c5", -1))
+        id = str(uid) + "-" + str(trial_no)
+        db.update('trial', where="id='%s'" % id, user_prob=user_prob, c1=c1, c2=c2, c3=c3, c4=c4, c5=c5)
         return "ok"
 
+
+class OverHandler(NeedInfoHandler):
+    def GET(self):
+        pass
 
 class ReportHandler(BaseHandler):
     def GET(self, action):

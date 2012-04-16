@@ -7,17 +7,18 @@ CREATE TABLE user (
 );
 
 CREATE TABLE game (
-    id integer primary key AUTOINCREMENT,
+    id text primary key,
     uid int,
     trial_no int,
     round_no int,
     invest int,
     returns int,
+    time int,
     created date default (datetime('now', 'localtime'))
 );
 
 CREATE TABLE trial (
-    id integer primary key AUTOINCREMENT,
+    id text primary key,
     uid int,
     trial_no int,
     probability int,

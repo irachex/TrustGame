@@ -15,6 +15,7 @@ Timer = {
         if (Timer.seconds == 0) {
             window.clearInterval(second_timer);
             Game.hint("error", "Time up!");
+            App.data[App.trial][App.round] = -1;
             Game.next()
             //App.newRound();
             return;
@@ -70,7 +71,13 @@ Game = {
         $("#returns").html(message).fadeIn(300);
     },
     invest: function(money) {
+        money = parseInt(money);
         var returns = money * (Math.random()*100 < Game.probability ? 2: 0);
+        App.data[App.trial][App.round] = {
+            invest: money,
+            returns: returns,
+            time: Timer.INIT_SECONDS - Timer.seconds
+        };
         window.clearInterval(second_timer);
         if (returns > 0) {
             Game.hint("success", "Invest $" + money + ", Return $" + returns);
@@ -100,6 +107,7 @@ App = {
     round: 0,
     prob_list: new Array(),
     img_list: new Array(),
+    data: new Array(),
     test: false,
     init: function() {
         if (window.location.href.indexOf("test") !== -1) {
@@ -151,6 +159,7 @@ App = {
             return;
         }
         App.trial += 1;
+        App.data[App.trial] = new Array();
         $(".trial_no").html(App.trial).val(App.trial);
         if (App.test) {
             $(".trial_no").html("Test");
@@ -159,9 +168,19 @@ App = {
         App.newRound();
     },
     over: function() {
-        window.onbeforeunload = null;
-        $("#rest_info").html("实验结束，感谢您的参与！");
-        $("#next_trial").html("");
+        $("#rest_info").html("正在提交数据...");
+        $("#next_trial").hide();
+        $.ajax({
+            url: "/invest",
+            type: "post",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: {"data": App.data},
+            success: function() {
+                window.onbeforeunload = null;
+                $("#rest_info").html("实验结束，感谢您的参与！");
+            }
+        });
     }
 }
 
@@ -182,25 +201,34 @@ Survey = {
             }
             return false;
         });
-        if (App.img_list[App.trial] == 0) {
+        Survey.reset();
+        if (App.img_list[App.trial - 1] == 0) {
             $("#photo_survey").hide();
-            $("#photo_survey input").val("-1");
+           // $("#photo_survey input").val("-1");
         }
         else {
             $("#photo_survey").show();
         }
-        $("#survey_error").hide().removeClass("disabled").removeAttr("disabled");
-        $("#survey form input").val("");
-        $("#survey form .btn-group .btn").removeClass("active");
         $("#cross").hide();
         $("#game").hide();
         $("#survey").show();
     },
+    reset: function() {
+        $("#survey_error").hide().removeClass("disabled").removeAttr("disabled");
+        $("#survey form .btn-group .btn").removeClass("active");
+        $("input[name=trial_no]").val(App.trial);
+        $("input[name=user_prob]").val("");
+        $.each($("input", "form"), function() {
+            this.checked = false;
+        });
+    },
     validate: function() {
         var flag = true;
-        $.each($("input", "form"), function() {
-            if ($(this).val() == "") flag=false;
-        });
+        if ($("input[name=user_prob]").val() == "") flag = false;
+        if ($("input[name=trial_no]").val() == "") flag = false;
+        for (var i=1; i<=5; ++i) {
+            if ($("input:radio[name=c"+i+"]:checked").val() == "") flag = false;
+        }
         return flag;
     },
     submit: function() {

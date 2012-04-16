@@ -197,7 +197,7 @@ App = {
         if (!App.test) {
             // not test, show survey
             $(".round_no").html(" Over. Please fill the survey");
-            Survey.init();
+            Survey.start();
         }
         else {
             // test
@@ -248,7 +248,8 @@ Survey = {
         });
         $("#survey form").submit(function() {
             if (Survey.validate()) {
-                $("#survey_error").addClass("disabled").attr("disabled", "")
+                $("#survey_error").hide();
+                $("#survey_btn").addClass("disabled").attr("disabled", "")
                 Survey.submit();
             }
             else {
@@ -256,6 +257,8 @@ Survey = {
             }
             return false;
         });
+    }
+    start: function() {
         Survey.reset();
         if (App.img_list[App.trial - 1] == 0) {
             $("#photo_survey").hide();
@@ -269,7 +272,8 @@ Survey = {
         $("#survey").show();
     },
     reset: function() {
-        $("#survey_error").hide().removeClass("disabled").removeAttr("disabled");
+        $("#survey_error").hide().
+        $("#survey_btn").removeClass("disabled").removeAttr("disabled");
         $("#survey form .btn-group .btn").removeClass("active");
         $("input[name=trial_no]").val(App.trial);
         $("input[name=user_prob]").val("");
@@ -304,6 +308,7 @@ Survey = {
 }
 
 $(document).ready(function() {
+    Survey.init();
     App.init();
     App.newTrial();
 });

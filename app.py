@@ -116,8 +116,9 @@ class InvestHandler(NeedInfoHandler):
         jsondata = json.loads(data)
         print jsondata
         uid = self.get_uid()
-        for trial_no in range(1, len(jsondata) + 1):
-            for round_no in range(1, len(jsondata[trial_no]) + 1):
+        for trial_no in range(1, len(jsondata)):
+            for round_no in range(1, len(jsondata[trial_no])):
+                print trial_no, round_no
                 if jsondata[trial_no][round_no] == -1:
                     money = -1
                     returns = -1

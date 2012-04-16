@@ -85,6 +85,9 @@ class InfoHandler(BaseHandler):
 
 class GameHandler(NeedInfoHandler):
     def GET(self):
+        uid = self.get_uid()
+        if db.query("select count(*) as cnt from game where id='%d-6-15'" % uid)[0].cnt:
+            web.seeother("/info")
         face_list = [(80, 1), (20, 2), (80, 3), (80, 4)]
         noface_list = [(80, 0), (20, 0)]
         random.shuffle(face_list)
@@ -92,7 +95,6 @@ class GameHandler(NeedInfoHandler):
         game_list = noface_list + face_list
         prob_list = [p for (p, i) in game_list]
         img_list = [i for (p, i) in game_list]
-        uid = self.get_uid()
         for i in range(len(prob_list)):
             trial_no = i + 1
             id = str(uid) + "-" + str(trial_no)
@@ -149,15 +151,20 @@ class SurveyHandler(NeedInfoHandler):
         return "ok"
 
 
-class OverHandler(NeedInfoHandler):
-    def GET(self):
-        pass
-
 class ReportHandler(BaseHandler):
     def GET(self, action):
-        user = db.query("user", order="uid")
-        trial = db.query("trial", order="uid, trial_no")
-        game = db.query("game", order="uid, trial_no, round_no")
+        user_list = db.query("user", order="uid")
+        trial_list = db.query("trial", order="uid, trial_no")
+        game_list = db.query("game", order="uid, trial_no, round_no")
+        user = dict()
+        trial = dict()
+        game = dict()
+        for item in user_list:
+            user[item.uid] = item
+        for item in trial_list:
+            trial[item.id] = item
+        for item in game_list:
+            game[item.id] = item
         if action=="download":
             # TODO: add csv export
             return

@@ -26,8 +26,7 @@ def getPath():
 
 class BaseHandler(object):
     def __init__(self):
-        if not self.get_uid():
-            web.seeother("/info")
+        pass
          
     def set_cookie(self, key, value):
         web.setcookie(key, value, 360000)
@@ -52,6 +51,11 @@ class BaseHandler(object):
             cid = uuid.uuid4()
             self.set_cookie("cid", cid)
         return cid
+
+class NeedInfoHandler(BaseHandler):
+    def __init__(self):
+        if not self.get_uid():
+            web.seeother("/info")
     
 class HomeHandler(BaseHandler):
     def GET(self):
@@ -75,7 +79,7 @@ class InfoHandler(BaseHandler):
         self.set_cookie("uid", uid)
         return "<html><script type='text/javascript'>window.location.href='/about';</script></html>"
 
-class GameHandler(BaseHandler):
+class GameHandler(NeedInfoHandler):
     def GET(self):
         face_list = [(80, 1), (20, 2), (80, 3), (80, 4)]
         noface_list = [(80, 0), (20, 0)]
@@ -89,11 +93,11 @@ class GameHandler(BaseHandler):
             db.insert('trial', uid=uid, trial_no=i+1, probability=prob_list[i], image=img_list[i])
         return render.game(str(prob_list), str(img_list))
 
-class TestHandler(GameHandler):
+class TestHandler(NeedInfoHandler):
     def GET(self):
         return render.game(str([50,]), str([0,]))
     
-class InvestHandler(GameHandler):
+class InvestHandler(NeedInfoHandler):
     def GET(self):
         referer = web.ctx.env.get('HTTP_REFERER')
         if referer and referer.endswith("test"):
@@ -106,7 +110,7 @@ class InvestHandler(GameHandler):
         db.insert("game", uid=uid, trial_no=trial_no, round_no=round_no, money=money, returns=returns)
         return "ok"
 
-class SurveyHandler(BaseHandler):
+class SurveyHandler(NeedInfoHandler):
     def POST(self):
         uid = self.get_uid()
         trial_no = int(web.input().get("trial_no", None))
@@ -140,7 +144,7 @@ db = web.database(dbn=config.db["engine"], db=config.db["name"])
 
 app = web.application(urls, globals())
 
-if config.debug:
+application = app.wsgifunc()
+
+if __name__ == "__main__":
     app.run()
-else:
-    application = app.wsgifunc()

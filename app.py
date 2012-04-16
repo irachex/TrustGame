@@ -39,7 +39,10 @@ class BaseHandler(object):
         self.set_cookie("cid", "")
     
     def get_uid(self):
-        return int(self.get_cookie("uid"))
+        uid = self.get_cookie("uid")
+        if not uid:
+            return None
+        return int(uid)
         
     def get_client_id(self):
         cid = self.get_cookie("cid")

@@ -309,10 +309,8 @@ Survey = {
 }
 
 $(document).ready(function() {
-    Survey.init();
-    Survey.start();
-   // App.init();
-//    App.newTrial();
+    App.init();
+    App.newTrial();
 });
 
 window.onbeforeunload = function() {

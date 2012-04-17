@@ -285,6 +285,7 @@ Survey = {
         var flag = true;
         if ($("input[name=user_prob]").val() == "") flag = false;
         if ($("input[name=trial_no]").val() == "") flag = false;
+        if (App.img_list[App.trial - 1] == 0) return flag;
         for (var i=1; i<=5; ++i) {
             var value = $("input[name=c"+i+"]:checked").val();
             if (value == "" || value == undefined || !value) flag = false;

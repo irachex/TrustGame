@@ -286,7 +286,8 @@ Survey = {
         if ($("input[name=user_prob]").val() == "") flag = false;
         if ($("input[name=trial_no]").val() == "") flag = false;
         for (var i=1; i<=5; ++i) {
-            if ($("input:radio[name=c"+i+"]:checked").val() == "") flag = false;
+            var value = $("input[name=c"+i+"]:checked").val();
+            if (value == "" || value == undefined || !value) flag = false;
         }
         return flag;
     },
@@ -309,8 +310,9 @@ Survey = {
 
 $(document).ready(function() {
     Survey.init();
-    App.init();
-    App.newTrial();
+    Survey.start();
+   // App.init();
+//    App.newTrial();
 });
 
 window.onbeforeunload = function() {

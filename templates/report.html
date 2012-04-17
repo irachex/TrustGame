@@ -1,4 +1,4 @@
-$def with (user, trial, game)
+$def with (user, trial, game_list)
 <!doctype html>
 <html>
 <head>
@@ -19,9 +19,10 @@ $def with (user, trial, game)
           <a class="brand" href="#">Trust Game</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li><a href="#">Home</a></li>
-              <li class="active"><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="/">Start</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/test">Test</a></li>
+              <li><a href="/game">Game</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -31,7 +32,15 @@ $def with (user, trial, game)
     <div id="wrapper" class="container">
         <div class="content" style="font-size: 1.1em;">
             <h2>Report</h2>
-            <table class="table">
+            <p>
+            *注：照片编号：1低可信-高回报, 2低可信-低回报, 3高可信-高回报, 4高可信-低回报率；0表示没有<br/>
+            -1表示该项为空，用户超时未填或不需要填写<br/>
+            未完成实验的数据没有显示
+            </p>
+            <p>
+                <a class="btn btn-success" href="/report/download">下载数据</a>
+            </p>
+            <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>被试</th>
@@ -39,7 +48,7 @@ $def with (user, trial, game)
                         <th>回合</th>
                         <th>投资</th>
                         <th>回报</th>
-                        <th>花费时间</th>
+                        <th>花费时间(s)</th>
                        <!-- <th>用户评价</th>
                         <th>可信度</th>
                         <th>吸引力</th>
@@ -49,32 +58,38 @@ $def with (user, trial, game)
                     </tr>
                 </thead>
                 <tbody>
-                $for item in game:
-                    $item
-                    if item.uid:
-                        <tr>
-                            <td rowspan="90">
-                            $item.uid<br/>
-                            $user[item.uid].gender<br/>
-                            $user[item.uid].age<br/>
-                            $user[item.uid].created
-                            </td>
-                            <td rowspan="15">
-                            $ tid = str(item.uid) + "-" + str(item.trial_no)
-                            $item.trial_no<br/>
-                            $trial[tid].probability<br/>
-                            $trial[tid].user_prob<br/>
-                            $trial[tid].c1<br/>
-                            $trial[tid].c2<br/>
-                            $trial[tid].c3<br/>
-                            $trial[tid].c4<br/>
-                            $trial[tid].c5
-                            </td>
-                            <td>$item.round_no</td>
-                            <td>$item.invest</td>
-                            <td>$item.returns</td>
-                            <td>$item.time</td>
-                        </tr>
+                $ last_uid = 0
+                $ last_trial_no = 0
+                $for item in game_list:
+                    <tr>
+                    $if item.uid != last_uid:
+                        $ last_uid = item.uid
+                        <td rowspan="90">
+                            编号 $item.uid<br/>
+                            $if item.uid in user:
+                                性别 $user[item.uid].gender<br/>
+                                年龄 $user[item.uid].age<br/>
+                                时间 $user[item.uid].created
+                        </td>
+                    $if item.trial_no != last_trial_no:
+                        $ last_trial_no = item.trial_no
+                        <td rowspan="15">
+                            $ tid = "%d-%d" % (item.uid, item.trial_no)
+                            组号 $item.trial_no<br/>
+                            照片编号 $trial[tid].image<br/>
+                            可能性 $trial[tid].probability%<br/>
+                            用户评价 $trial[tid].user_prob%<br/>
+                            可信度 $trial[tid].c1<br/>
+                            吸引力 $trial[tid].c2<br/>
+                            竞争力 $trial[tid].c3<br/>
+                            攻击性 $trial[tid].c4<br/>
+                            令人喜爱程度 $trial[tid].c5
+                        </td>
+                    <td>$item.round_no</td>
+                    <td>$item.invest</td>
+                    <td>$item.returns</td>
+                    <td>$item.time</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

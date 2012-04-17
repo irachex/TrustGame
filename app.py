@@ -17,7 +17,7 @@ urls = (
     r"/test", "TestHandler",
     r"/invest", "InvestHandler",
     r"/survey", "SurveyHandler",
-    r"/report/(.*)", "ReportHandler",
+    r"/report(.*)", "ReportHandler",
     r"/", "HomeHandler",
 )
 
@@ -155,20 +155,24 @@ class ReportHandler(object):
     def GET(self, action):
         user_list = db.select("user", order="id")
         trial_list = db.select("trial", order="uid, trial_no")
-        game_list = db.select("game", order="uid, trial_no, round_no")
+        #game_list = db.select("game", order="uid, trial_no, round_no")
+        game_list = db.query("select * from game where uid in (select uid from game where id like '%-6-15')")
         user = dict()
         trial = dict()
-        game = dict()
         for item in user_list:
-            user[item.uid] = item
+            user[item.id] = item 
         for item in trial_list:
             trial[item.id] = item
-        for item in game_list:
-            game[item.id] = item
-        if action=="download":
-            # TODO: add csv export
-            return
-        return render.report(user=user, trial=trial, game=game)
+        if action=="/download":
+            web.header("Content-type", "text/csv;charset=gbk")
+            web.header("Content-Disposition", 'attachment; filename="TrustGameData.csv"')
+            content = u'"被试", "性别", "年龄", "时间", "组", "照片编号", "可能性", "用户评价", "可信度", "吸引力", "竞争力", "攻击性", "令人喜爱程度", "回合", "投资", "回报", "花费时间",\r\n'
+            for item in game_list:
+                tid = "%d-%d" % (item.uid, item.trial_no)
+                content += u'"%d", "%s", "%s", "%s", "%d", "%d", "%d", "%d", "%d", "%d", "%d", "%d", "%d", "%d", "%d", "%d", "%s",\r\n' \
+                % (item.uid, user[item.uid].gender, user[item.uid].age, user[item.uid].created, item.trial_no, trial[tid].image, trial[tid].probability, trial[tid].user_prob, trial[tid].c1, trial[tid].c2, trial[tid].c3, trial[tid].c4, trial[tid].c5, item.round_no, item.invest, item.returns, item.time)
+            return content.encode("gbk")
+        return render.report(user=user, trial=trial, game_list=game_list)
 
 
 rootdir = getPath()

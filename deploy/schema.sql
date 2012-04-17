@@ -3,7 +3,7 @@ CREATE TABLE user (
     name text,
     gender text,
     age text,
-    created date default (datetime('now', 'localtime'))
+    created timestamp default CURRENT_TIMESTAMP
 );
 
 CREATE TABLE game (
@@ -14,7 +14,7 @@ CREATE TABLE game (
     invest int,
     returns int,
     time int,
-    created date default (datetime('now', 'localtime'))
+    created timestamp default CURRENT_TIMESTAMP
 );
 
 CREATE TABLE trial (
@@ -29,5 +29,5 @@ CREATE TABLE trial (
     c3 int,
     c4 int,
     c5 int,
-    created date default (datetime('now', 'localtime'))
+    created timestamp default CURRENT_TIMESTAMP
 );

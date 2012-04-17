@@ -17,7 +17,7 @@ urls = (
     r"/test", "TestHandler",
     r"/invest", "InvestHandler",
     r"/survey", "SurveyHandler",
-    r"/report", "ReportHandler",
+    r"/report/(.*)", "ReportHandler",
     r"/", "HomeHandler",
 )
 
@@ -151,11 +151,11 @@ class SurveyHandler(NeedInfoHandler):
         return "ok"
 
 
-class ReportHandler(BaseHandler):
+class ReportHandler(object):
     def GET(self, action):
-        user_list = db.query("user", order="uid")
-        trial_list = db.query("trial", order="uid, trial_no")
-        game_list = db.query("game", order="uid, trial_no, round_no")
+        user_list = db.select("user", order="id")
+        trial_list = db.select("trial", order="uid, trial_no")
+        game_list = db.select("game", order="uid, trial_no, round_no")
         user = dict()
         trial = dict()
         game = dict()

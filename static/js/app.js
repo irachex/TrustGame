@@ -309,6 +309,7 @@ Survey = {
 }
 
 $(document).ready(function() {
+    Survey.init();
     App.init();
     App.newTrial();
 });

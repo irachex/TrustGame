@@ -128,6 +128,8 @@ Game = {
     invest: function(money) {
         money = parseInt(money);
         var returns = money * (Math.random()*100 < Game.probability ? 2: 0);
+        App.score += returns;
+        $('.score').html(App.score);
         App.data[App.trial][App.round] = {
             invest: money,
             returns: returns,
@@ -164,8 +166,10 @@ App = {
     prob_list: new Array(),
     img_list: new Array(),
     data: new Array(),
+    score: 0,
     test: false,
     init: function() {
+        App.score = 0;
         if (window.location.href.indexOf("test") !== -1) {
             App.test = true;
         }

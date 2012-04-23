@@ -56,19 +56,24 @@ class BaseHandler(object):
             self.set_cookie("cid", cid)
         return cid
 
+
 class NeedInfoHandler(BaseHandler):
     def __init__(self):
         if not self.get_uid():
             web.seeother("/info")
+            return
+            
     
 class HomeHandler(BaseHandler):
     def GET(self):
         #return render.index()
         web.seeother("/info")
 
+
 class AboutHandler(BaseHandler):
     def GET(self):
         return render.about()
+
 
 class InfoHandler(BaseHandler):
     def GET(self):
@@ -83,9 +88,13 @@ class InfoHandler(BaseHandler):
         self.set_cookie("uid", uid)
         return "<html><script type='text/javascript'>window.location.href='/about';</script></html>"
 
+
 class GameHandler(NeedInfoHandler):
     def GET(self):
         uid = self.get_uid()
+        if not uid:
+            web.seeother("/info")
+            return
         if db.query("select count(*) as cnt from game where id='%d-6-15'" % uid)[0].cnt:
             web.seeother("/info")
         face_list = [(80, 1), (20, 2), (80, 3), (80, 4)]
@@ -104,9 +113,11 @@ class GameHandler(NeedInfoHandler):
                 db.update('trial', where="id='%s'" % id, uid=uid, trial_no=trial_no, probability=prob_list[i], image=img_list[i])
         return render.game(str(prob_list), str(img_list))
 
+
 class TestHandler(NeedInfoHandler):
     def GET(self):
         return render.game(str([50,]), str([0,]))
+    
     
 class InvestHandler(NeedInfoHandler):
     def POST(self):
@@ -135,6 +146,7 @@ class InvestHandler(NeedInfoHandler):
                 else:
                     db.update("game", where="id='%s'" % id, id=id, uid=uid, trial_no=trial_no, round_no=round_no, invest=invest, returns=returns, time=time)
         return '{"ok":"true"}'
+
 
 class SurveyHandler(NeedInfoHandler):
     def POST(self):

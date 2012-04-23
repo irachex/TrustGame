@@ -92,7 +92,7 @@ class InfoHandler(BaseHandler):
 class GameHandler(NeedInfoHandler):
     def GET(self):
         uid = self.get_uid()
-        if not uid:
+        if not uid or db.query("select count(*) as cnt from user where id=%d" % uid)[0].cnt == 0:
             web.seeother("/info")
             return
         if db.query("select count(*) as cnt from game where id='%d-6-15'" % uid)[0].cnt:
